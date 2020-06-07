@@ -20,6 +20,7 @@ Future<List<Farmer>> readMobileFarmers() async {
     String mobileToken = await fcm.getToken();
 
     for (SimCard card in simData.cards) {
+      if (card.carrierName == "No service") continue;
       String ussdResp = await ussdOperation(card.subscriptionId, '*#62#');
       int phoneNumber = int.parse(getNumFrom62(ussdResp));
       var farmer = new Farmer(

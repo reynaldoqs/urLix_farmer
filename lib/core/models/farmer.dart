@@ -10,6 +10,7 @@ class Farmer {
   final int status;
   bool isOnline;
   FarmerStatus farmerStatus;
+  bool isWorking;
   //List<Recharge> recharges;
   Farmer({
     this.msgToken,
@@ -21,6 +22,7 @@ class Farmer {
     this.status,
     this.isOnline,
     this.farmerStatus,
+    this.isWorking = false,
   });
 
   factory Farmer.fromFirestore(DocumentSnapshot doc) {

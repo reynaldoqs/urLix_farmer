@@ -13,17 +13,19 @@ class LogTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "[${log.createdAt.day} ${log.createdAt.hour}:${log.createdAt.minute}]",
+            "${log.createdAt.day} ${log.createdAt.hour}:${log.createdAt.minute}",
             style:
                 TextStyle(fontFamily: 'Inconsolata', color: xColors.textLight3),
           ),
           SizedBox(
             width: 10,
           ),
-          Text(
-            log.log,
-            style: TextStyle(
-                fontFamily: 'Inconsolata', color: _getColor(log.type)),
+          Flexible(
+            child: Text(
+              log.log,
+              style: TextStyle(
+                  fontFamily: 'Inconsolata', color: _getColor(log.type)),
+            ),
           )
         ],
       ),

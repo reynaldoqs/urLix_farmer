@@ -39,19 +39,18 @@ class FarmerProvider extends ChangeNotifier {
         }
       }
 
-      String status1 =
-          "${mFarmers[0].phoneNumber} - ${mFarmers[0].farmerStatus}";
-      String status2 =
-          "${mFarmers[1].phoneNumber} - ${mFarmers[1].farmerStatus}";
-      print(status1);
-      print(status2);
-      _logger.addLog(new FarmerLog(type: LogType.action, log: status1));
-      _logger.addLog(new FarmerLog(type: LogType.action, log: status2));
+      for (var i = 0; i < mFarmers.length; i++) {
+        String st = "${mFarmers[i].phoneNumber} - ${mFarmers[i].farmerStatus}";
+        _logger.addLog(new FarmerLog(log: st));
+      }
 
-      if (mFarmers[0] != null) setSim1Farmer(mFarmers[0]);
-      if (mFarmers[1] != null) setSim2Farmer(mFarmers[1]);
+      if (mFarmers.length == 1) setSim1Farmer(mFarmers[0]);
+      if (mFarmers.length == 2) {
+        setSim1Farmer(mFarmers[0]);
+        setSim2Farmer(mFarmers[1]);
+      }
     } catch (e) {
-      _logger.addLog(new FarmerLog(type: LogType.error, log: e.toString()));
+      _logger.addLog(FarmerLog(type: LogType.error, log: e.toString()));
       print("farmerProvider.setupFarmers - error: ${e.toString()}");
     }
   }
@@ -98,6 +97,17 @@ class FarmerProvider extends ChangeNotifier {
   }
 
   //local updates
+  void breakWorking() {
+    if (sim1 != null) sim1.isWorking = false;
+    if (sim2 != null) sim2.isWorking = false;
+    notifyListeners();
+  }
+
+  void toWork(int pnum) {
+    if (sim1.phoneNumber == pnum) sim1.isWorking = true;
+    if (sim2.phoneNumber == pnum) sim2.isWorking = true;
+    notifyListeners();
+  }
 
   void setSim1Farmer(Farmer farmer) {
     sim1 = farmer;
@@ -107,5 +117,11 @@ class FarmerProvider extends ChangeNotifier {
   void setSim2Farmer(Farmer farmer) {
     sim2 = farmer;
     notifyListeners();
+  }
+
+  Farmer getFarmerByNum(int pnum) {
+    if (sim1.phoneNumber == pnum) return sim1;
+    if (sim2.phoneNumber == pnum) return sim2;
+    return null;
   }
 }

@@ -4,6 +4,5 @@ String getNumFrom62(String input) {
 }
 
 List<String> getExecCodes(String listCode) {
-  print("resturing $listCode");
   return listCode.split("&");
 }

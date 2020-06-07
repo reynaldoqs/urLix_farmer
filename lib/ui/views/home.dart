@@ -3,12 +3,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:urlix_farmer/core/models/FarmerLog.dart';
+import 'package:urlix_farmer/ui/widgets/dateInformation.dart';
 import 'package:urlix_farmer/core/providers/farmerProvider.dart';
 import 'package:urlix_farmer/core/providers/loggerProvider.dart';
-import 'package:urlix_farmer/core/utilities/farmerOps.dart';
-import 'package:urlix_farmer/core/utilities/stringOpe.dart';
-import 'package:urlix_farmer/core/utilities/ussdOps.dart';
+import 'package:urlix_farmer/core/utilities/messageHandler.dart';
 import 'package:urlix_farmer/locator.dart';
 import 'package:urlix_farmer/ui/utilities/colors.dart' as xColors;
 import 'package:urlix_farmer/ui/widgets/circletIcon.dart';
@@ -22,6 +20,7 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   var loggerProvider = locator<LoggerProvider>();
+  var farmerProvider = locator<FarmerProvider>();
   @override
   void initState() {
     super.initState();
@@ -30,20 +29,7 @@ class _MainViewState extends State<MainView> {
 
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        final dynamic data = message['data'];
-        print(data);
-        final String codes = data['execCodes'];
-        print(codes);
-        var codesToExec = getExecCodes(codes);
-
-        for (String code in codesToExec) {
-          print("executing $code");
-          String response = await ussdOperation(3, code);
-          print("response from USSD $response");
-          loggerProvider.addLog(FarmerLog(
-              type: LogType.action, log: "response from USSD $response"));
-        }
+        await fcMessageHandler(message, farmerProvider, loggerProvider);
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
@@ -59,16 +45,19 @@ class _MainViewState extends State<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    final farmerProvider = Provider.of<FarmerProvider>(context);
+    final fp = Provider.of<FarmerProvider>(context);
 
     return Scaffold(
-      backgroundColor: xColors.black1.withOpacity(0.5),
+      backgroundColor: xColors.black1.withOpacity(0.7),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: xColors.black1.withOpacity(0),
         actions: <Widget>[
           FlatButton(
-            child: Icon(Icons.code),
+            child: Icon(
+              EvaIcons.activity,
+              color: xColors.green1,
+            ),
             onPressed: () {
               Navigator.pushNamed(context, '/logs');
             },
@@ -79,14 +68,15 @@ class _MainViewState extends State<MainView> {
           child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
+          DateInformation(),
           SpinKitRipple(
             borderWidth: 4,
             color: xColors.green1,
             size: 60,
           ),
-          farmerProvider.sim1 != null
+          fp.sim1 != null
               ? IconCirclet(
-                  color: xColors.textDark3,
+                  color: fp.sim1.isWorking ? xColors.green1 : xColors.textDark3,
                   label: farmerProvider.sim1.company,
                   icon: Icons.sim_card,
                 )
@@ -95,9 +85,9 @@ class _MainViewState extends State<MainView> {
                   label: "SIM1",
                   icon: Icons.sim_card_alert,
                 ),
-          farmerProvider.sim2 != null
+          fp.sim2 != null
               ? IconCirclet(
-                  color: xColors.textDark3,
+                  color: fp.sim2.isWorking ? xColors.green1 : xColors.textDark3,
                   label: farmerProvider.sim2.company,
                   icon: Icons.sim_card,
                 )

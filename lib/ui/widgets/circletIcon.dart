@@ -29,7 +29,7 @@ class IconCirclet extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: color, width: 2),
+              border: Border.all(color: color, width: 2.5),
             ),
             child: Icon(
               icon,
@@ -44,10 +44,10 @@ class IconCirclet extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: color,
-            fontSize: xColors.textXs,
-            fontFamily: 'Roboto',
-          ),
+              color: color,
+              fontSize: xColors.textXs,
+              fontFamily: 'Roboto',
+              fontWeight: FontWeight.bold),
         ),
       ],
     );
